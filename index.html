@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TeleMed — Plataforma de Telemedicina</title>
+  <meta name="description" content="Plataforma web de telemedicina para agendar citas médicas, realizar videoconsultas y gestionar tu historial clínico desde cualquier lugar.">
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/auth.css">
+</head>
+<body>
+  <div class="auth-page">
+
+    <!-- ── Panel Hero ── -->
+    <div class="auth-hero">
+      <div class="auth-particles" id="particles"></div>
+      <div class="auth-hero-content animate-fade">
+        <div class="auth-logo">
+          <div class="auth-logo-icon">🏥</div>
+          <div class="auth-logo-text">
+            <div class="auth-logo-name">TeleMed</div>
+            <div class="auth-logo-tagline">Plataforma de Telemedicina</div>
+          </div>
+        </div>
+
+        <h1>Tu salud, <span>en cualquier lugar</span></h1>
+        <p>Accede a consultas médicas de calidad sin salir de casa. Agenda citas, realiza videoconsultas y gestiona tu historial clínico en un solo lugar.</p>
+
+        <div class="auth-features">
+          <div class="auth-feature">
+            <div class="auth-feature-icon">📹</div>
+            <div class="auth-feature-text">
+              <h4>Videoconsulta integrada</h4>
+              <p>Sin aplicaciones externas. La videollamada corre dentro de la plataforma.</p>
+            </div>
+          </div>
+          <div class="auth-feature">
+            <div class="auth-feature-icon">📋</div>
+            <div class="auth-feature-text">
+              <h4>Historial clínico digital</h4>
+              <p>Recetas, certificados y órdenes de laboratorio en PDF.</p>
+            </div>
+          </div>
+          <div class="auth-feature">
+            <div class="auth-feature-icon">🔔</div>
+            <div class="auth-feature-text">
+              <h4>Notificaciones por WhatsApp</h4>
+              <p>Recordatorios automáticos de tus citas médicas.</p>
+            </div>
+          </div>
+          <div class="auth-feature">
+            <div class="auth-feature-icon">🔒</div>
+            <div class="auth-feature-text">
+              <h4>Datos seguros y privados</h4>
+              <p>Tu historial clínico protegido con cifrado y control de acceso.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Panel Formulario ── -->
+    <div class="auth-form-panel">
+      <div style="width:100%; max-width:380px;">
+
+        <div style="text-align:center; margin-bottom:28px;">
+          <div class="auth-logo-icon" style="width:52px;height:52px;margin:0 auto 12px;font-size:1.6rem;">🏥</div>
+          <h2 id="form-title">Bienvenido de nuevo</h2>
+          <p class="auth-subtitle" id="form-subtitle">Inicia sesión para acceder a tu cuenta</p>
+        </div>
+
+        <!-- Tabs -->
+        <div class="auth-tabs">
+          <button class="auth-tab active" id="tab-login" onclick="switchTab('login')">Iniciar Sesión</button>
+          <button class="auth-tab" id="tab-registro" onclick="switchTab('registro')">Registrarse</button>
+        </div>
+
+        <!-- Error -->
+        <div class="auth-error" id="auth-error">
+          <span>⚠️</span>
+          <span id="auth-error-msg"></span>
+        </div>
+
+        <!-- ── Formulario Login ── -->
+        <form class="auth-form" id="form-login" onsubmit="handleLogin(event)">
+          <div class="auth-input-group">
+            <span class="auth-input-icon">✉️</span>
+            <input type="email" class="auth-input" id="login-email" placeholder="Correo electrónico" required autocomplete="email">
+          </div>
+          <div class="auth-input-group">
+            <span class="auth-input-icon">🔒</span>
+            <input type="password" class="auth-input" id="login-password" placeholder="Contraseña" required autocomplete="current-password">
+            <button type="button" class="auth-input-toggle" onclick="togglePassword('login-password', this)">👁️</button>
+          </div>
+          <div class="auth-meta">
+            <label class="auth-check">
+              <input type="checkbox" id="remember-me"> Recordarme
+            </label>
+            <span class="auth-forgot" onclick="showForgotModal()">¿Olvidaste tu contraseña?</span>
+          </div>
+          <button type="submit" class="auth-submit" id="btn-login">
+            <span>Ingresar</span> →
+          </button>
+        </form>
+
+        <!-- ── Formulario Registro ── -->
+        <form class="auth-form" id="form-registro" style="display:none;" onsubmit="handleRegistro(event)">
+          <div class="form-row" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
+            <div class="auth-input-group" style="margin-bottom:0;">
+              <span class="auth-input-icon">👤</span>
+              <input type="text" class="auth-input" id="reg-nombre" placeholder="Nombres" required>
+            </div>
+            <div class="auth-input-group" style="margin-bottom:0;">
+              <span class="auth-input-icon">👤</span>
+              <input type="text" class="auth-input" id="reg-apellido" placeholder="Apellidos" required>
+            </div>
+          </div>
+          <div class="auth-input-group">
+            <span class="auth-input-icon">🪪</span>
+            <input type="text" class="auth-input" id="reg-identificacion" placeholder="Número de cédula" required maxlength="13">
+          </div>
+          <div class="auth-input-group">
+            <span class="auth-input-icon">📱</span>
+            <input type="tel" class="auth-input" id="reg-telefono" placeholder="Teléfono / WhatsApp" required>
+          </div>
+          <div class="auth-input-group">
+            <span class="auth-input-icon">✉️</span>
+            <input type="email" class="auth-input" id="reg-email" placeholder="Correo electrónico" required>
+          </div>
+          <div class="auth-input-group">
+            <span class="auth-input-icon">🔒</span>
+            <input type="password" class="auth-input" id="reg-password" placeholder="Contraseña (min. 6 caracteres)" required minlength="6">
+            <button type="button" class="auth-input-toggle" onclick="togglePassword('reg-password', this)">👁️</button>
+          </div>
+          <div class="auth-input-group">
+            <span class="auth-input-icon">🔒</span>
+            <input type="password" class="auth-input" id="reg-password2" placeholder="Confirmar contraseña" required>
+          </div>
+          <div style="margin-bottom:16px;">
+            <select class="auth-select" id="reg-convenio">
+              <option value="">Sin seguro médico</option>
+              <option value="IESS">IESS</option>
+              <option value="BMI">BMI</option>
+              <option value="Seguros Sucre">Seguros Sucre</option>
+              <option value="Equivida">Equivida</option>
+              <option value="Salud SA">Salud SA</option>
+            </select>
+          </div>
+          <button type="submit" class="auth-submit" id="btn-registro">
+            <span>Crear cuenta</span> ✓
+          </button>
+        </form>
+
+        <!-- Credenciales demo -->
+        <div class="demo-creds">
+          <h4>🧪 Cuentas de demostración</h4>
+          <div class="demo-cred-item" onclick="fillDemo('admin@clinica.com','admin123')">
+            <span class="demo-role-tag demo-role-admin">Admin</span>
+            <span class="demo-email">admin@clinica.com</span>
+            <span class="demo-click">← click</span>
+          </div>
+          <div class="demo-cred-item" onclick="fillDemo('dr.garcia@clinica.com','doctor123')">
+            <span class="demo-role-tag demo-role-doctor">Doctor</span>
+            <span class="demo-email">dr.garcia@clinica.com</span>
+            <span class="demo-click">← click</span>
+          </div>
+          <div class="demo-cred-item" onclick="fillDemo('dra.lopez@clinica.com','doctor123')">
+            <span class="demo-role-tag demo-role-doctor">Doctor</span>
+            <span class="demo-email">dra.lopez@clinica.com</span>
+            <span class="demo-click">← click</span>
+          </div>
+          <div class="demo-cred-item" onclick="fillDemo('paciente@email.com','paciente123')">
+            <span class="demo-role-tag demo-role-paciente">Paciente</span>
+            <span class="demo-email">paciente@email.com</span>
+            <span class="demo-click">← click</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal recuperar contraseña -->
+  <div class="modal-overlay" id="forgot-modal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>Recuperar contraseña</h3>
+        <button class="modal-close-btn" onclick="document.getElementById('forgot-modal').classList.remove('active')">×</button>
+      </div>
+      <div class="modal-body">
+        <p style="margin-bottom:16px;">Ingresa tu número de teléfono y te enviaremos un código de verificación por WhatsApp.</p>
+        <div class="auth-input-group">
+          <span class="auth-input-icon">📱</span>
+          <input type="tel" class="auth-input" id="forgot-telefono" placeholder="Número de WhatsApp">
+        </div>
+        <div id="otp-step" style="display:none; margin-top:12px;">
+          <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:10px;">Ingresa el código de 6 dígitos enviado a tu WhatsApp:</p>
+          <div class="auth-input-group">
+            <span class="auth-input-icon">🔢</span>
+            <input type="text" class="auth-input" id="forgot-otp" placeholder="Código OTP" maxlength="6">
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="document.getElementById('forgot-modal').classList.remove('active')">Cancelar</button>
+        <button class="btn btn-primary" onclick="handleForgot()">Enviar código</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/data.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/chatbot.js"></script>
+  <script>
+    // ── Verificar si ya hay sesión activa ──
+    window.addEventListener('DOMContentLoaded', () => {
+      const sesion = getSesion();
+      if (sesion) redirigirPorRol(sesion.rol);
+      createParticles();
+    });
+
+    // ── Partículas decorativas ──
+    function createParticles() {
+      const container = document.getElementById('particles');
+      if (!container) return;
+      for (let i = 0; i < 12; i++) {
+        const p = document.createElement('div');
+        p.className = 'particle';
+        const size = Math.random() * 6 + 3;
+        p.style.cssText = `
+          width:${size}px; height:${size}px;
+          left:${Math.random() * 100}%;
+          animation-duration:${Math.random() * 15 + 10}s;
+          animation-delay:${Math.random() * 10}s;
+        `;
+        container.appendChild(p);
+      }
+    }
+
+    // ── Switch de tabs ──
+    function switchTab(tab) {
+      const isLogin = tab === 'login';
+      document.getElementById('tab-login').classList.toggle('active', isLogin);
+      document.getElementById('tab-registro').classList.toggle('active', !isLogin);
+      document.getElementById('form-login').style.display = isLogin ? 'block' : 'none';
+      document.getElementById('form-registro').style.display = isLogin ? 'none' : 'block';
+      document.getElementById('form-title').textContent = isLogin ? 'Bienvenido de nuevo' : 'Crear cuenta';
+      document.getElementById('form-subtitle').textContent = isLogin ? 'Inicia sesión para acceder a tu cuenta' : 'Regístrate como paciente en minutos';
+      clearError();
+    }
+
+    // ── Toggle contraseña ──
+    function togglePassword(id, btn) {
+      const input = document.getElementById(id);
+      input.type = input.type === 'password' ? 'text' : 'password';
+      btn.textContent = input.type === 'password' ? '👁️' : '🙈';
+    }
+
+    // ── Rellenar credenciales demo ──
+    function fillDemo(email, pass) {
+      switchTab('login');
+      document.getElementById('login-email').value = email;
+      document.getElementById('login-password').value = pass;
+      clearError();
+    }
+
+    // ── Manejo de error ──
+    function showError(msg) {
+      const err = document.getElementById('auth-error');
+      document.getElementById('auth-error-msg').textContent = msg;
+      err.classList.add('show');
+    }
+    function clearError() {
+      document.getElementById('auth-error').classList.remove('show');
+    }
+
+    // ── Login ──
+    function handleLogin(e) {
+      e.preventDefault();
+      clearError();
+      const email = document.getElementById('login-email').value.trim();
+      const password = document.getElementById('login-password').value;
+      const btn = document.getElementById('btn-login');
+
+      btn.disabled = true;
+      btn.innerHTML = '<div class="loader"></div>';
+
+      setTimeout(() => {
+        const result = login(email, password);
+        if (result.ok) {
+          btn.innerHTML = '✅ Entrando...';
+          setTimeout(() => redirigirPorRol(result.sesion.rol), 600);
+        } else {
+          showError(result.error);
+          btn.disabled = false;
+          btn.innerHTML = '<span>Ingresar</span> →';
+        }
+      }, 800);
+    }
+
+    // ── Registro ──
+    function handleRegistro(e) {
+      e.preventDefault();
+      clearError();
+
+      const nombre = document.getElementById('reg-nombre').value.trim();
+      const apellido = document.getElementById('reg-apellido').value.trim();
+      const identificacion = document.getElementById('reg-identificacion').value.trim();
+      const telefono = document.getElementById('reg-telefono').value.trim();
+      const email = document.getElementById('reg-email').value.trim();
+      const password = document.getElementById('reg-password').value;
+      const password2 = document.getElementById('reg-password2').value;
+      const convenio = document.getElementById('reg-convenio').value;
+
+      if (password !== password2) { showError('Las contraseñas no coinciden.'); return; }
+      if (password.length < 6) { showError('La contraseña debe tener al menos 6 caracteres.'); return; }
+
+      const btn = document.getElementById('btn-registro');
+      btn.disabled = true;
+      btn.innerHTML = '<div class="loader"></div>';
+
+      setTimeout(() => {
+        const result = registrarPaciente({
+          nombre: nombre + ' ' + apellido,
+          email, password, telefono, identificacion, convenio
+        });
+        if (result.ok) {
+          btn.innerHTML = '✅ ¡Cuenta creada!';
+          setTimeout(() => {
+            const lr = login(email, password);
+            if (lr.ok) redirigirPorRol(lr.sesion.rol);
+          }, 700);
+        } else {
+          showError(result.error);
+          btn.disabled = false;
+          btn.innerHTML = '<span>Crear cuenta</span> ✓';
+        }
+      }, 800);
+    }
+
+    // ── Recuperar contraseña (OTP por WhatsApp demo) ──
+    function showForgotModal() {
+      document.getElementById('forgot-modal').classList.add('active');
+    }
+
+    let forgotStep = 1;
+    function handleForgot() {
+      if (forgotStep === 1) {
+        const tel = document.getElementById('forgot-telefono').value.trim();
+        if (!tel) { alert('Ingresa tu número de WhatsApp.'); return; }
+        document.getElementById('otp-step').style.display = 'block';
+        forgotStep = 2;
+        document.querySelector('#forgot-modal .btn-primary').textContent = 'Verificar código';
+        showToast('Código enviado por WhatsApp al ' + tel, 'info');
+      } else {
+        const otp = document.getElementById('forgot-otp').value.trim();
+        if (otp.length !== 6) { alert('Ingresa el código de 6 dígitos.'); return; }
+        document.getElementById('forgot-modal').classList.remove('active');
+        showToast('Contraseña restablecida. Revisa tu WhatsApp.', 'success');
+        forgotStep = 1;
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel Paciente — TeleMed</title>
+  <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+<div class="app-layout">
+
+  <!-- ── Sidebar ── -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-icon">🏥</div>
+      <div>
+        <div class="sidebar-logo-text">TeleMed</div>
+        <div class="sidebar-logo-sub">Mi cuenta</div>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Principal</div>
+      <div class="nav-item active" onclick="showSection('miscitas')" id="nav-miscitas">
+        <span class="nav-icon">📅</span> Mis Citas
+      </div>
+      <div class="nav-item" onclick="showSection('historial')" id="nav-historial">
+        <span class="nav-icon">📂</span> Mi Historial Médico
+      </div>
+      <div class="nav-item" onclick="showSection('documentos')" id="nav-documentos">
+        <span class="nav-icon">📄</span> Mis Documentos
+      </div>
+      <div class="nav-section-label">Sistema</div>
+      <div class="nav-item" onclick="showSection('notificaciones')" id="nav-notificaciones">
+        <span class="nav-icon">🔔</span> Notificaciones
+        <span class="nav-badge" id="nav-notif-count-pac"></span>
+      </div>
+      <div class="nav-item" onclick="showSection('perfil')" id="nav-perfil">
+        <span class="nav-icon">👤</span> Mi Perfil
+      </div>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="user-mini">
+        <div class="avatar" id="sidebar-avatar-pac">P</div>
+        <div>
+          <div class="user-mini-name" id="sidebar-name-pac">Paciente</div>
+          <div class="user-mini-role">Paciente</div>
+        </div>
+      </div>
+      <div class="nav-item" onclick="logout()" style="margin-top:4px;">
+        <span class="nav-icon">🚪</span> Cerrar sesión
+      </div>
+    </div>
+  </aside>
+
+  <!-- ── Main ── -->
+  <div class="main-content">
+    <div class="topbar">
+      <h1 class="topbar-title" id="topbar-title-pac">Mis Citas</h1>
+      <div class="topbar-actions">
+        <div class="notif-btn" onclick="showSection('notificaciones')" title="Notificaciones">
+          🔔 <div class="notif-dot" id="notif-dot-pac" style="display:none;"></div>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="irAgendar()">+ Agendar cita</button>
+        <div class="avatar" id="topbar-avatar-pac">P</div>
+      </div>
+    </div>
+
+    <div class="page-content">
+
+      <!-- ── MIS CITAS ── -->
+      <div id="sec-miscitas" class="animate-fade">
+        <div class="page-header">
+          <h2>Mis Citas</h2>
+          <p>Estado y seguimiento de tus citas médicas</p>
+        </div>
+
+        <!-- Cita próxima destacada -->
+        <div id="proxima-cita-banner"></div>
+
+        <div class="tabs" style="margin-top:20px;">
+          <button class="tab-btn active" onclick="switchCitasTab('activas',this)">Activas</button>
+          <button class="tab-btn" onclick="switchCitasTab('pasadas',this)">Historial</button>
+          <button class="tab-btn" onclick="switchCitasTab('todas',this)">Todas</button>
+        </div>
+        <div id="citas-pac-content"></div>
+      </div>
+
+      <!-- ── HISTORIAL MÉDICO ── -->
+      <div id="sec-historial" style="display:none;" class="animate-fade">
+        <div class="page-header">
+          <h2>Mi Historial Médico</h2>
+          <p>Información clínica completa</p>
+        </div>
+        <div id="historial-pac-content"></div>
+      </div>
+
+      <!-- ── DOCUMENTOS ── -->
+      <div id="sec-documentos" style="display:none;" class="animate-fade">
+        <div class="page-header">
+          <h2>Mis Documentos</h2>
+          <p>Recetas, certificados y órdenes de laboratorio</p>
+        </div>
+        <div class="tabs">
+          <button class="tab-btn active" onclick="switchDocTab('recetas',this)">Recetas</button>
+          <button class="tab-btn" onclick="switchDocTab('certificados',this)">Certificados</button>
+          <button class="tab-btn" onclick="switchDocTab('ordenes',this)">Órdenes de Lab.</button>
+        </div>
+        <div id="docs-pac-content"></div>
+      </div>
+
+      <!-- ── NOTIFICACIONES ── -->
+      <div id="sec-notificaciones" style="display:none;" class="animate-fade">
+        <div class="page-header"><h2>Notificaciones</h2></div>
+        <div class="notif-list" id="notif-list-pac"></div>
+      </div>
+
+      <!-- ── PERFIL ── -->
+      <div id="sec-perfil" style="display:none;" class="animate-fade">
+        <div class="page-header">
+          <h2>Mi Perfil</h2>
+          <p>Edita tu información personal</p>
+        </div>
+        <div id="perfil-pac-content"></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ── Modal Ver detalle de cita ── -->
+<div class="modal-overlay" id="modal-cita-pac">
+  <div class="modal-box modal-lg">
+    <div class="modal-header">
+      <h3>Detalle de Cita</h3>
+      <button class="modal-close-btn" onclick="cerrarModal('modal-cita-pac')">×</button>
+    </div>
+    <div class="modal-body" id="modal-cita-pac-body"></div>
+    <div class="modal-footer" id="modal-cita-pac-footer"></div>
+  </div>
+</div>
+
+<!-- ── Modal Calificación ── -->
+<div class="modal-overlay" id="modal-calificar">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3>Calificar atención</h3>
+      <button class="modal-close-btn" onclick="cerrarModal('modal-calificar')">×</button>
+    </div>
+    <div class="modal-body">
+      <p style="margin-bottom:16px;">¿Cómo calificarías la atención recibida?</p>
+      <div class="stars" id="stars-calificacion">
+        <span class="star active" data-val="1" onclick="selectStar(1)">⭐</span>
+        <span class="star active" data-val="2" onclick="selectStar(2)">⭐</span>
+        <span class="star active" data-val="3" onclick="selectStar(3)">⭐</span>
+        <span class="star active" data-val="4" onclick="selectStar(4)">⭐</span>
+        <span class="star active" data-val="5" onclick="selectStar(5)">⭐</span>
+      </div>
+      <div class="form-group" style="margin-top:16px;">
+        <label class="form-label">Comentario (opcional)</label>
+        <textarea class="form-control" id="calif-comentario" placeholder="Comparte tu experiencia..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="cerrarModal('modal-calificar')">Cancelar</button>
+      <button class="btn btn-primary" onclick="guardarCalificacion()">Enviar calificación</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Modal Ver receta/cert/orden ── -->
+<div class="modal-overlay" id="modal-doc-viewer">
+  <div class="modal-box modal-lg">
+    <div class="modal-header">
+      <h3 id="modal-doc-title">Documento</h3>
+      <button class="modal-close-btn" onclick="cerrarModal('modal-doc-viewer')">×</button>
+    </div>
+    <div class="modal-body" id="modal-doc-body"></div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="cerrarModal('modal-doc-viewer')">Cerrar</button>
+      <button class="btn btn-primary" onclick="simularDescarga()">⬇️ Descargar PDF</button>
+    </div>
+  </div>
+</div>
+
+<script src="js/data.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/chatbot.js"></script>
+<script src="js/paciente.js"></script>
+</body>
+</html>

@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agendar Cita — TeleMed</title>
+  <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+<div class="app-layout">
+
+  <!-- Sidebar mínimo -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-icon">🏥</div>
+      <div>
+        <div class="sidebar-logo-text">TeleMed</div>
+        <div class="sidebar-logo-sub">Agendar cita</div>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-item" onclick="window.location.href='dashboard-paciente.html'">
+        <span class="nav-icon">←</span> Volver al panel
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="user-mini">
+        <div class="avatar" id="sidebar-avatar-ag">P</div>
+        <div>
+          <div class="user-mini-name" id="sidebar-name-ag">Paciente</div>
+          <div class="user-mini-role">Paciente</div>
+        </div>
+      </div>
+      <div class="nav-item" onclick="logout()" style="margin-top:4px;">
+        <span class="nav-icon">🚪</span> Cerrar sesión
+      </div>
+    </div>
+  </aside>
+
+  <div class="main-content">
+    <div class="topbar">
+      <h1 class="topbar-title">Agendar Cita Médica</h1>
+      <div class="topbar-actions">
+        <div class="avatar" id="topbar-avatar-ag">P</div>
+      </div>
+    </div>
+
+    <div class="page-content">
+      <!-- Stepper -->
+      <div class="stepper" id="stepper">
+        <div class="step active" id="step-1"><div class="step-circle">1</div><div class="step-label">Especialidad</div></div>
+        <div class="step" id="step-2"><div class="step-circle">2</div><div class="step-label">Doctor</div></div>
+        <div class="step" id="step-3"><div class="step-circle">3</div><div class="step-label">Fecha & Hora</div></div>
+        <div class="step" id="step-4"><div class="step-circle">4</div><div class="step-label">Motivo</div></div>
+        <div class="step" id="step-5"><div class="step-circle">5</div><div class="step-label">Confirmación</div></div>
+      </div>
+
+      <!-- ── Paso 1: Especialidad ── -->
+      <div id="paso-1" class="animate-fade">
+        <div class="page-header">
+          <h2>Selecciona la especialidad</h2>
+          <p>Elige la especialidad médica que necesitas</p>
+        </div>
+        <div id="grid-especialidades-ag" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;"></div>
+      </div>
+
+      <!-- ── Paso 2: Doctor ── -->
+      <div id="paso-2" style="display:none;" class="animate-fade">
+        <div class="page-header">
+          <h2 id="paso2-titulo">Selecciona el médico</h2>
+          <p>Elige el doctor de tu preferencia</p>
+        </div>
+        <div id="grid-doctores-ag" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;"></div>
+        <div style="margin-top:20px;">
+          <button class="btn btn-secondary" onclick="irPaso(1)">← Atrás</button>
+        </div>
+      </div>
+
+      <!-- ── Paso 3: Fecha y hora ── -->
+      <div id="paso-3" style="display:none;" class="animate-fade">
+        <div class="page-header">
+          <h2>Selecciona fecha y hora</h2>
+          <p>Elige un horario disponible</p>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start;">
+          <div class="card">
+            <div class="card-header"><span class="card-title">📅 Fecha</span></div>
+            <div class="form-group">
+              <label class="form-label">Selecciona una fecha</label>
+              <input type="date" class="form-control" id="ag-fecha" onchange="cargarSlots()">
+            </div>
+            <div id="info-dia" style="margin-top:8px;font-size:0.85rem;color:var(--text-muted);"></div>
+          </div>
+          <div class="card">
+            <div class="card-header"><span class="card-title">🕐 Horarios disponibles</span></div>
+            <div id="slots-disponibles" class="slots-grid"></div>
+          </div>
+        </div>
+        <div style="margin-top:20px;display:flex;gap:10px;">
+          <button class="btn btn-secondary" onclick="irPaso(2)">← Atrás</button>
+          <button class="btn btn-primary" onclick="irPaso(4)" id="btn-paso4" disabled>Continuar →</button>
+        </div>
+      </div>
+
+      <!-- ── Paso 4: Motivo ── -->
+      <div id="paso-4" style="display:none;" class="animate-fade">
+        <div class="page-header">
+          <h2>Motivo de consulta</h2>
+          <p>Describe brevemente el motivo de tu cita</p>
+        </div>
+        <div class="card" style="max-width:600px;">
+          <div class="form-group">
+            <label class="form-label">¿Cuál es el motivo de tu consulta? *</label>
+            <select class="form-control" id="ag-motivo-tipo" onchange="actualizarMotivo()">
+              <option value="">— Selecciona una categoría —</option>
+              <option>Revisión de resultados de exámenes</option>
+              <option>Síntomas leves (fiebre, tos, malestar general)</option>
+              <option>Dudas sobre medicación</option>
+              <option>Control de enfermedad crónica</option>
+              <option>Seguimiento subsecuente</option>
+              <option>Solicitar receta médica</option>
+              <option>Certificado médico</option>
+              <option>Otro (especificar abajo)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Descripción adicional</label>
+            <textarea class="form-control" id="ag-motivo-texto" placeholder="Describe con más detalle tu situación..." rows="4"></textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Convenio de seguro médico</label>
+            <select class="form-control" id="ag-convenio">
+              <option value="">Sin seguro</option>
+              <option>IESS</option><option>BMI</option><option>Seguros Sucre</option>
+              <option>Equivida</option><option>Salud SA</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Adjuntar documentos previos (opcional)</label>
+            <input type="file" class="form-control" id="ag-adjunto" multiple accept="image/*,.pdf" style="cursor:pointer;">
+            <div class="form-hint">Exámenes previos, imágenes, etc. (demo: sin subida real)</div>
+          </div>
+          <div style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);border-radius:var(--radius);padding:12px;font-size:0.83rem;color:var(--danger);margin-bottom:16px;">
+            ⚠️ <strong>Importante:</strong> Las teleconsultas no son adecuadas para emergencias médicas. Si tienes una emergencia, acude al servicio de urgencias más cercano.
+          </div>
+        </div>
+        <div style="margin-top:20px;display:flex;gap:10px;">
+          <button class="btn btn-secondary" onclick="irPaso(3)">← Atrás</button>
+          <button class="btn btn-primary" onclick="irPaso(5)">Continuar →</button>
+        </div>
+      </div>
+
+      <!-- ── Paso 5: Confirmación y pago ── -->
+      <div id="paso-5" style="display:none;" class="animate-fade">
+        <div class="page-header">
+          <h2>Confirmar y pagar</h2>
+          <p>Revisa los datos de tu cita y realiza el pago</p>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start;">
+          <div class="card">
+            <div class="card-header"><span class="card-title">📋 Resumen de la cita</span></div>
+            <div id="resumen-cita"></div>
+          </div>
+          <div class="card">
+            <div class="card-header"><span class="card-title">💳 Método de pago</span></div>
+            <div class="form-group">
+              <label class="form-label">Selecciona cómo pagar</label>
+              <select class="form-control" id="ag-metodo-pago">
+                <option value="tarjeta">💳 Tarjeta de crédito/débito</option>
+                <option value="transferencia">🏦 Transferencia bancaria</option>
+                <option value="efectivo">💵 Efectivo (pago en clínica)</option>
+              </select>
+            </div>
+            <div id="form-tarjeta">
+              <div class="form-group">
+                <label class="form-label">Número de tarjeta</label>
+                <input type="text" class="form-control" id="ag-tarjeta-num" placeholder="•••• •••• •••• ••••" maxlength="19" oninput="formatTarjeta(this)">
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">Vencimiento</label>
+                  <input type="text" class="form-control" id="ag-tarjeta-exp" placeholder="MM/AA" maxlength="5">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">CVV</label>
+                  <input type="text" class="form-control" id="ag-tarjeta-cvv" placeholder="•••" maxlength="4">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Titular de la tarjeta</label>
+                <input type="text" class="form-control" id="ag-tarjeta-nombre" placeholder="Nombre completo">
+              </div>
+            </div>
+            <div id="timer-pago" style="display:none;"></div>
+            <div style="background:rgba(26,127,232,0.08);border:1px solid rgba(26,127,232,0.2);border-radius:var(--radius);padding:12px;font-size:0.83rem;margin-bottom:16px;">
+              🔒 Tienes <strong>30 minutos</strong> para completar el pago. Pasado ese tiempo, la cita se libera automáticamente.
+            </div>
+            <button class="btn btn-primary btn-full btn-lg" onclick="confirmarPago()" id="btn-pagar">
+              💳 Confirmar y pagar
+            </button>
+          </div>
+        </div>
+        <div style="margin-top:20px;">
+          <button class="btn btn-secondary" onclick="irPaso(4)">← Atrás</button>
+        </div>
+      </div>
+
+      <!-- ── Confirmación final ── -->
+      <div id="paso-exitoso" style="display:none;" class="animate-fade">
+        <div style="text-align:center;padding:60px 20px;max-width:500px;margin:0 auto;">
+          <div style="font-size:4rem;margin-bottom:16px;animation:pulse 2s infinite;">✅</div>
+          <h2 style="margin-bottom:12px;">¡Cita agendada exitosamente!</h2>
+          <p style="color:var(--text-secondary);margin-bottom:24px;">Tu cita ha sido registrada y está en espera de confirmación por el médico. Recibirás una notificación por WhatsApp.</p>
+          <div id="exito-detalle" style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;text-align:left;margin-bottom:24px;"></div>
+          <div style="display:flex;gap:12px;justify-content:center;">
+            <button class="btn btn-primary" onclick="window.location.href='dashboard-paciente.html'">Ir a Mis Citas</button>
+            <button class="btn btn-secondary" onclick="window.location.reload()">Agendar otra cita</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="js/data.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/chatbot.js"></script>
+<script>
+  let sesionAg = null;
+  let pacienteAg = null;
+  let selectedEsp = null;
+  let selectedDoctor = null;
+  let selectedFecha = null;
+  let selectedHora = null;
+  let pasoActual = 1;
+
+  document.addEventListener('DOMContentLoaded', () => {
+    sesionAg = requireAuth('paciente');
+    if (!sesionAg) return;
+    pacienteAg = getPacienteByUserId(sesionAg.userId);
+    if (!pacienteAg) { logout(); return; }
+    const u = getUserById(sesionAg.userId);
+    document.getElementById('sidebar-name-ag').textContent = u?.nombre?.split(' ')[0] || 'Paciente';
+    document.getElementById('sidebar-avatar-ag').textContent = u?.nombre?.[0] || 'P';
+    document.getElementById('topbar-avatar-ag').textContent = u?.nombre?.[0] || 'P';
+
+    // Convenio del paciente
+    if (pacienteAg.convenioSeguro) {
+      const sel = document.getElementById('ag-convenio');
+      if (sel) sel.value = pacienteAg.convenioSeguro;
+    }
+
+    renderEspecialidades();
+    // Fecha mínima = hoy
+    const hoy = new Date().toISOString().split('T')[0];
+    document.getElementById('ag-fecha').min = hoy;
+  });
+
+  // ── Paso 1: Especialidades ──
+  function renderEspecialidades() {
+    const especialidades = getEspecialidades().filter(e => {
+      // Solo mostrar especialidades que tienen doctores
+      return getDoctores().some(d => d.especialidadId === e.id && d.estadoAprobacion === 'aprobado');
+    });
+    document.getElementById('grid-especialidades-ag').innerHTML = especialidades.map(e => `
+      <div class="card" style="cursor:pointer;text-align:center;padding:28px 20px;transition:all 0.2s;"
+           onclick="seleccionarEspecialidad('${e.id}')"
+           onmouseover="this.style.borderColor='var(--primary)'"
+           onmouseout="this.style.borderColor=''">
+        <div style="font-size:2.5rem;margin-bottom:12px;">${e.icono}</div>
+        <div style="font-weight:700;color:var(--text-primary);margin-bottom:4px;">${e.nombre}</div>
+        <div style="font-size:0.8rem;color:var(--text-muted);">${e.descripcion}</div>
+      </div>
+    `).join('');
+  }
+
+  function seleccionarEspecialidad(espId) {
+    selectedEsp = espId;
+    const esp = getEspecialidadById(espId);
+    document.getElementById('paso2-titulo').textContent = `Médicos de ${esp?.nombre || ''}`;
+    renderDoctores();
+    irPasoUI(2);
+  }
+
+  // ── Paso 2: Doctores ──
+  function renderDoctores() {
+    const doctores = getDoctores().filter(d => d.especialidadId === selectedEsp && d.estadoAprobacion === 'aprobado');
+    document.getElementById('grid-doctores-ag').innerHTML = doctores.map(d => {
+      const u = getUserById(d.usuarioId);
+      const consEsp = getCitas().filter(c => c.doctorId === d.id && c.estado === 'finalizada').length;
+      return `<div class="doctor-card ${selectedDoctor === d.id ? 'selected' : ''}" onclick="seleccionarDoctor('${d.id}')">
+        <div class="doctor-card-header">
+          <div class="avatar avatar-lg">${u?.nombre?.[0] || 'D'}</div>
+          <div class="doctor-info">
+            <h4>${u?.nombre || 'Doctor'}</h4>
+            <p>${d.credenciales || ''}</p>
+          </div>
+        </div>
+        <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:12px;">${d.descripcion || ''}</p>
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <div>
+            <div class="doctor-rating">⭐ ${d.calificacion} <span style="color:var(--text-muted);font-size:0.78rem;">(${consEsp} consultas)</span></div>
+          </div>
+          <div style="text-align:right;">
+            <div class="doctor-tarifa">$${d.tarifa.toFixed(2)}</div>
+            <div class="doctor-tarifa-label">por consulta</div>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  function seleccionarDoctor(doctorId) {
+    selectedDoctor = doctorId;
+    renderDoctores();
+    irPasoUI(3);
+    cargarSlots();
+  }
+
+  // ── Paso 3: Fecha y slots ──
+  function cargarSlots() {
+    const fechaEl = document.getElementById('ag-fecha');
+    const fecha = fechaEl.value;
+    if (!fecha) { document.getElementById('slots-disponibles').innerHTML = '<p style="color:var(--text-muted);font-size:0.85rem;">Selecciona una fecha primero.</p>'; return; }
+
+    selectedFecha = fecha;
+    selectedHora = null;
+    document.getElementById('btn-paso4').disabled = true;
+
+    const diaSemana = ['domingo','lunes','martes','miercoles','jueves','viernes','sabado'][new Date(fecha + 'T00:00:00').getDay()];
+    const doc = getDoctorById(selectedDoctor);
+    const slotsDisponibles = doc?.horarios?.[diaSemana] || [];
+
+    // Verificar ocupados
+    const citasEseDia = getCitas().filter(c => c.doctorId === selectedDoctor && c.fecha === fecha && ['pendiente','aceptada','en_curso'].includes(c.estado));
+    const ocupados = citasEseDia.map(c => c.hora);
+
+    document.getElementById('info-dia').textContent = `Día: ${['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'][new Date(fecha+'T00:00:00').getDay()]}`;
+
+    if (slotsDisponibles.length === 0) {
+      document.getElementById('slots-disponibles').innerHTML = '<p style="color:var(--text-muted);font-size:0.85rem;">El médico no tiene disponibilidad este día.</p>';
+      return;
+    }
+
+    document.getElementById('slots-disponibles').innerHTML = slotsDisponibles.map(h => {
+      const ocupado = ocupados.includes(h);
+      return `<button class="slot-btn ${ocupado ? 'occupied' : ''}" 
+        onclick="${ocupado ? '' : `seleccionarHora('${h}',this)`}" 
+        ${ocupado ? 'disabled title="Ocupado"' : ''}>${h}</button>`;
+    }).join('');
+  }
+
+  function seleccionarHora(hora, btn) {
+    selectedHora = hora;
+    document.querySelectorAll('.slot-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    document.getElementById('btn-paso4').disabled = false;
+  }
+
+  // ── Paso 4: Motivo ──
+  function actualizarMotivo() {
+    const val = document.getElementById('ag-motivo-tipo').value;
+    if (val && val !== 'Otro (especificar abajo)') {
+      document.getElementById('ag-motivo-texto').placeholder = `Cuéntanos más sobre: "${val}"`;
+    }
+  }
+
+  // ── Paso 5: Resumen y pago ──
+  function mostrarResumen() {
+    const doc = getDoctorById(selectedDoctor);
+    const u = getUserById(doc?.usuarioId);
+    const esp = getEspecialidadById(selectedEsp);
+    const motivo = document.getElementById('ag-motivo-tipo').value || document.getElementById('ag-motivo-texto').value;
+    const convenio = document.getElementById('ag-convenio').value;
+
+    if (!motivo) { showToast('Ingresa el motivo de tu consulta.', 'error'); return false; }
+
+    document.getElementById('resumen-cita').innerHTML = `
+      <div class="info-row"><span class="info-row-label">Doctor</span><span class="info-row-value"><strong>${u?.nombre}</strong></span></div>
+      <div class="info-row"><span class="info-row-label">Especialidad</span><span class="info-row-value">${esp?.icono} ${esp?.nombre}</span></div>
+      <div class="info-row"><span class="info-row-label">Fecha</span><span class="info-row-value">${formatFecha(selectedFecha)}</span></div>
+      <div class="info-row"><span class="info-row-label">Hora</span><span class="info-row-value">${selectedHora}</span></div>
+      <div class="info-row"><span class="info-row-label">Motivo</span><span class="info-row-value">${motivo}</span></div>
+      ${convenio ? `<div class="info-row"><span class="info-row-label">Convenio</span><span class="info-row-value"><span class="badge badge-info">${convenio}</span></span></div>` : ''}
+      <div class="separator"></div>
+      <div class="info-row"><span class="info-row-label" style="font-size:1rem;">Total a pagar</span><span class="info-row-value" style="font-size:1.3rem;font-weight:800;color:var(--success);">$${doc?.tarifa?.toFixed(2) || '0.00'}</span></div>
+    `;
+    return true;
+  }
+
+  // ── Formatear tarjeta ──
+  function formatTarjeta(input) {
+    let val = input.value.replace(/\D/g,'').substr(0,16);
+    input.value = val.replace(/(.{4})/g,'$1 ').trim();
+  }
+
+  // ── Confirmar pago ──
+  function confirmarPago() {
+    const metodo = document.getElementById('ag-metodo-pago').value;
+    if (metodo === 'tarjeta') {
+      const num = document.getElementById('ag-tarjeta-num').value.replace(/\s/g,'');
+      if (num.length < 16) { showToast('Ingresa un número de tarjeta válido.', 'error'); return; }
+    }
+
+    const btn = document.getElementById('btn-pagar');
+    btn.disabled = true;
+    btn.innerHTML = '<div class="loader"></div> Procesando pago...';
+
+    setTimeout(() => {
+      const doc = getDoctorById(selectedDoctor);
+      const motivo = document.getElementById('ag-motivo-tipo').value + (document.getElementById('ag-motivo-texto').value ? ' — ' + document.getElementById('ag-motivo-texto').value : '');
+      const convenio = document.getElementById('ag-convenio').value;
+      const metodo = document.getElementById('ag-metodo-pago').value;
+
+      const citaId = generateId('c');
+      const nuevaCita = {
+        id: citaId,
+        pacienteId: pacienteAg.id,
+        doctorId: selectedDoctor,
+        especialidadId: selectedEsp,
+        fecha: selectedFecha,
+        hora: selectedHora,
+        motivo: motivo.trim(),
+        estado: 'pendiente',
+        adjuntos: [],
+        convenio: convenio || null,
+        montoPago: doc?.tarifa || 0,
+        estadoPago: 'pagado',
+        calificacion: null,
+        notas: '',
+        fechaCreacion: new Date().toISOString().split('T')[0]
+      };
+
+      agregarCita(nuevaCita);
+      agregarPago({ id: generateId('pg'), citaId, monto: doc?.tarifa || 0, estado: 'completado', metodo, timestamp: new Date().toISOString() });
+
+      // Notificaciones
+      const sesUser = getUserById(sesionAg.userId);
+      agregarNotificacion(sesionAg.userId, 'cita_creada', `Tu cita con ${getDoctorNombre(selectedDoctor)} el ${formatFechaCorta(selectedFecha)} a las ${selectedHora} fue registrada. Pago confirmado.`);
+      const docUserId = getDoctorById(selectedDoctor)?.usuarioId;
+      if (docUserId) agregarNotificacion(docUserId, 'nueva_cita', `Nueva solicitud de cita de ${sesUser?.nombre} para el ${formatFechaCorta(selectedFecha)} a las ${selectedHora}.`);
+
+      const esp = getEspecialidadById(selectedEsp);
+      document.getElementById('exito-detalle').innerHTML = `
+        <div class="info-row"><span class="info-row-label">Doctor</span><span class="info-row-value">${getDoctorNombre(selectedDoctor)}</span></div>
+        <div class="info-row"><span class="info-row-label">Especialidad</span><span class="info-row-value">${esp?.nombre}</span></div>
+        <div class="info-row"><span class="info-row-label">Fecha</span><span class="info-row-value">${formatFecha(selectedFecha)}</span></div>
+        <div class="info-row"><span class="info-row-label">Hora</span><span class="info-row-value">${selectedHora}</span></div>
+        <div class="info-row"><span class="info-row-label">Estado</span><span class="info-row-value"><span class="badge badge-warning">Pendiente de aprobación</span></span></div>
+        <div class="info-row"><span class="info-row-label">Pago</span><span class="info-row-value"><span class="badge badge-success">✅ Confirmado</span></span></div>
+      `;
+
+      // Mostrar éxito
+      ['paso-1','paso-2','paso-3','paso-4','paso-5'].forEach(p => { const el = document.getElementById(p); if(el) el.style.display='none'; });
+      document.getElementById('paso-exitoso').style.display = 'block';
+      document.getElementById('stepper').style.display = 'none';
+    }, 1800);
+  }
+
+  // ── Navegación pasos ──
+  function irPaso(num) {
+    if (num === 5) {
+      if (!mostrarResumen()) return;
+    }
+    irPasoUI(num);
+  }
+
+  function irPasoUI(num) {
+    for (let i = 1; i <= 5; i++) {
+      const p = document.getElementById('paso-' + i);
+      if (p) p.style.display = i === num ? 'block' : 'none';
+    }
+    for (let i = 1; i <= 5; i++) {
+      const s = document.getElementById('step-' + i);
+      if (!s) continue;
+      s.classList.remove('active','done');
+      if (i < num) s.classList.add('done');
+      else if (i === num) s.classList.add('active');
+    }
+    pasoActual = num;
+    window.scrollTo(0,0);
+  }
+
+  document.getElementById('ag-metodo-pago')?.addEventListener('change', function() {
+    document.getElementById('form-tarjeta').style.display = this.value === 'tarjeta' ? 'block' : 'none';
+  });
+</script>
+</body>
+</html>

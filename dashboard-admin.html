@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel Administrador — TeleMed</title>
+  <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+<div class="app-layout">
+
+  <!-- ── Sidebar ── -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-icon">🏥</div>
+      <div>
+        <div class="sidebar-logo-text">TeleMed</div>
+        <div class="sidebar-logo-sub">Administrador</div>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Principal</div>
+      <div class="nav-item active" onclick="showSection('dashboard')" id="nav-dashboard">
+        <span class="nav-icon">📊</span> Dashboard
+      </div>
+      <div class="nav-section-label">Gestión</div>
+      <div class="nav-item" onclick="showSection('doctores')" id="nav-doctores">
+        <span class="nav-icon">👨‍⚕️</span> Doctores
+      </div>
+      <div class="nav-item" onclick="showSection('pacientes')" id="nav-pacientes">
+        <span class="nav-icon">🧑‍🦱</span> Pacientes
+      </div>
+      <div class="nav-item" onclick="showSection('especialidades')" id="nav-especialidades">
+        <span class="nav-icon">🩺</span> Especialidades
+      </div>
+      <div class="nav-section-label">Operaciones</div>
+      <div class="nav-item" onclick="showSection('citas')" id="nav-citas">
+        <span class="nav-icon">📅</span> Todas las citas
+      </div>
+      <div class="nav-item" onclick="showSection('pagos')" id="nav-pagos">
+        <span class="nav-icon">💳</span> Pagos
+      </div>
+      <div class="nav-section-label">Sistema</div>
+      <div class="nav-item" onclick="showSection('notificaciones')" id="nav-notificaciones">
+        <span class="nav-icon">🔔</span> Notificaciones
+        <span class="nav-badge" id="nav-notif-count"></span>
+      </div>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="user-mini">
+        <div class="avatar" id="sidebar-avatar">A</div>
+        <div>
+          <div class="user-mini-name" id="sidebar-name">Admin</div>
+          <div class="user-mini-role">Administrador</div>
+        </div>
+      </div>
+      <div class="nav-item" onclick="logout()" style="margin-top:4px;">
+        <span class="nav-icon">🚪</span> Cerrar sesión
+      </div>
+    </div>
+  </aside>
+
+  <!-- ── Main ── -->
+  <div class="main-content">
+    <div class="topbar">
+      <h1 class="topbar-title" id="topbar-title">Dashboard</h1>
+      <div class="topbar-actions">
+        <div class="notif-btn" onclick="showSection('notificaciones')" title="Notificaciones">
+          🔔 <div class="notif-dot" id="notif-dot" style="display:none;"></div>
+        </div>
+        <div class="avatar" id="topbar-avatar">A</div>
+      </div>
+    </div>
+
+    <div class="page-content">
+
+      <!-- ── DASHBOARD ── -->
+      <div id="sec-dashboard" class="animate-fade">
+        <div class="page-header">
+          <h2>Panel de Control</h2>
+          <p>Resumen general de la plataforma TeleMed</p>
+        </div>
+
+        <div class="kpi-grid" id="kpi-grid"></div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:24px;">
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">Citas recientes</span>
+              <button class="btn btn-sm btn-secondary" onclick="showSection('citas')">Ver todas</button>
+            </div>
+            <div id="dashboard-citas-recientes"></div>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">Doctores activos</span>
+              <button class="btn btn-sm btn-secondary" onclick="showSection('doctores')">Ver todos</button>
+            </div>
+            <div id="dashboard-doctores"></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Distribución de citas por especialidad</span>
+          </div>
+          <div id="chart-especialidades" style="display:flex; gap:12px; flex-wrap:wrap; padding-top:8px;"></div>
+        </div>
+      </div>
+
+      <!-- ── DOCTORES ── -->
+      <div id="sec-doctores" style="display:none;" class="animate-fade">
+        <div class="page-header">
+          <h2>Gestión de Doctores</h2>
+          <p>Administra los médicos registrados en la plataforma</p>
+        </div>
+        <div class="section-header">
+          <div class="filters-bar" style="flex:1; margin:0;">
+            <div class="search-input-wrapper">
+              <span class="search-icon">🔍</span>
+              <input type="text" class="form-control search-input" id="search-doctor" placeholder="Buscar doctor..." oninput="renderDoctores()">
+            </div>
+          </div>
+          <button class="btn btn-primary" onclick="abrirModalNuevoDoctor()">+ Nuevo Doctor</button>
+        </div>
+        <div class="table-wrapper" style="margin-top:16px;">
+          <table>
+            <thead>
+              <tr>
+                <th>Doctor</th>
+                <th>Especialidad</th>
+                <th>Contacto</th>
+                <th>Consultas</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="tabla-doctores"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ── PACIENTES ── -->
+      <div id="sec-pacientes" style="display:none;" class="animate-fade">
+        <div class="page-header">
+          <h2>Gestión de Pacientes</h2>
+          <p>Administra los pacientes registrados</p>
+        </div>
+        <div class="filters-bar">
+          <div class="search-input-wrapper" style="flex:1;">
+            <span class="search-icon">🔍</span>
+            <input type="text" class="form-control search-input" id="search-paciente" placeholder="Buscar paciente..." oninput="renderPacientes()">
+          </div>
+        </div>
+        <div class="table-wrapper" style="margin-top:16px;">
+          <table>
+            <thead>
+              <tr>
+                <th>Paciente</th>
+                <th>Identificación</th>
+                <th>Teléfono</th>
+                <th>Convenio</th>
+                <th>Citas</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="tabla-pacientes"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ── ESPECIALIDADES ── -->
+      <div id="sec-especialidades" style="display:none;" class="animate-fade">
+        <div class="page-header">
+          <h2>Especialidades Médicas</h2>
+          <p>Configura las especialidades disponibles en la plataforma</p>
+        </div>
+        <div class="section-header">
+          <div></div>
+          <button class="btn btn-primary" onclick="abrirModalEspecialidad()">+ Nueva Especialidad</button>
+        </div>
+        <div id="grid-especialidades" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px;margin-top:16px;"></div>
+      </div>
+
+      <!-- ── CITAS ── -->
+      <div id="sec-citas" style="display:none;" class="animate-fade">
+        <div class="page-header">
+          <h2>Todas las Citas</h2>
+          <p>Visualiza y filtra todas las citas del sistema</p>
+        </div>
+        <div class="filters-bar">
+          <div class="search-input-wrapper" style="flex:1;">
+            <span class="search-icon">🔍</span>
+            <input type="text" class="form-control search-input" id="search-cita" placeholder="Buscar por paciente o doctor..." oninput="renderCitas()">
+          </div>
+          <select class="form-control" id="filter-estado-cita" onchange="renderCitas()" style="max-width:160px;">
+            <option value="">Todos los estados</option>
+            <option value="pendiente">Pendiente</option>
+            <option value="aceptada">Aceptada</option>
+            <option value="rechazada">Rechazada</option>
+            <option value="reprogramada">Reprogramada</option>
+            <option value="cancelada">Cancelada</option>
+            <option value="finalizada">Finalizada</option>
+          </select>
+          <select class="form-control" id="filter-especialidad-cita" onchange="renderCitas()" style="max-width:180px;">
+            <option value="">Todas las especialidades</option>
+          </select>
+        </div>
+        <div class="table-wrapper" style="margin-top:16px;">
+          <table>
+            <thead>
+              <tr>
+                <th>Paciente</th>
+                <th>Doctor</th>
+                <th>Especialidad</th>
+                <th>Fecha / Hora</th>
+                <th>Motivo</th>
+                <th>Estado</th>
+                <th>Pago</th>
+              </tr>
+            </thead>
+            <tbody id="tabla-citas"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ── PAGOS ── -->
+      <div id="sec-pagos" style="display:none;" class="animate-fade">
+        <div class="page-header">
+          <h2>Gestión de Pagos</h2>
+          <p>Visualiza el estado de los pagos de las citas</p>
+        </div>
+        <div class="kpi-grid">
+          <div class="kpi-card" style="--kpi-color: var(--success);">
+            <div class="kpi-icon">💰</div>
+            <div class="kpi-value" id="kpi-ingreso"></div>
+            <div class="kpi-label">Ingreso total</div>
+          </div>
+          <div class="kpi-card" style="--kpi-color: var(--primary);">
+            <div class="kpi-icon">✅</div>
+            <div class="kpi-value" id="kpi-pagos-completados"></div>
+            <div class="kpi-label">Pagos completados</div>
+          </div>
+        </div>
+        <div class="table-wrapper" style="margin-top:16px;">
+          <table>
+            <thead>
+              <tr><th>Cita</th><th>Paciente</th><th>Doctor</th><th>Monto</th><th>Método</th><th>Estado</th><th>Fecha</th></tr>
+            </thead>
+            <tbody id="tabla-pagos"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ── NOTIFICACIONES ── -->
+      <div id="sec-notificaciones" style="display:none;" class="animate-fade">
+        <div class="page-header">
+          <h2>Notificaciones</h2>
+          <p>Centro de notificaciones del sistema</p>
+        </div>
+        <div class="notif-list" id="notif-list-admin"></div>
+      </div>
+
+    </div><!-- /page-content -->
+  </div><!-- /main-content -->
+</div><!-- /app-layout -->
+
+<!-- ── Modal Nuevo Doctor ── -->
+<div class="modal-overlay" id="modal-doctor">
+  <div class="modal-box modal-lg">
+    <div class="modal-header">
+      <h3 id="modal-doctor-title">Nuevo Doctor</h3>
+      <button class="modal-close-btn" onclick="cerrarModal('modal-doctor')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Nombre completo *</label>
+          <input type="text" class="form-control" id="doc-nombre" placeholder="Dr. Nombre Apellido">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Correo electrónico *</label>
+          <input type="email" class="form-control" id="doc-email" placeholder="doctor@clinica.com">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Teléfono</label>
+          <input type="tel" class="form-control" id="doc-telefono" placeholder="+593 99 000 0000">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Identificación</label>
+          <input type="text" class="form-control" id="doc-identificacion" placeholder="Número de cédula">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Especialidad *</label>
+          <select class="form-control" id="doc-especialidad"></select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Tarifa por consulta ($) *</label>
+          <input type="number" class="form-control" id="doc-tarifa" placeholder="40.00" min="0">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Contraseña inicial *</label>
+        <input type="password" class="form-control" id="doc-password" placeholder="Contraseña">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Descripción profesional</label>
+        <textarea class="form-control" id="doc-descripcion" placeholder="Breve descripción del médico..."></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Credenciales / Títulos</label>
+        <input type="text" class="form-control" id="doc-credenciales" placeholder="MD, PhD — Universidad...">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="cerrarModal('modal-doctor')">Cancelar</button>
+      <button class="btn btn-primary" onclick="guardarDoctor()">Guardar Doctor</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Modal Especialidad ── -->
+<div class="modal-overlay" id="modal-especialidad">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3>Nueva Especialidad</h3>
+      <button class="modal-close-btn" onclick="cerrarModal('modal-especialidad')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Nombre *</label>
+        <input type="text" class="form-control" id="esp-nombre" placeholder="Ej: Cardiología">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Ícono (emoji)</label>
+        <input type="text" class="form-control" id="esp-icono" placeholder="❤️" maxlength="4">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Descripción</label>
+        <textarea class="form-control" id="esp-descripcion" placeholder="Descripción de la especialidad..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="cerrarModal('modal-especialidad')">Cancelar</button>
+      <button class="btn btn-primary" onclick="guardarEspecialidad()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<script src="js/data.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/chatbot.js"></script>
+<script src="js/admin.js"></script>
+</body>
+</html>

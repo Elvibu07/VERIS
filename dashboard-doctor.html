@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel Doctor — TeleMed</title>
+  <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+<div class="app-layout">
+
+  <!-- ── Sidebar ── -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-icon">🏥</div>
+      <div>
+        <div class="sidebar-logo-text">TeleMed</div>
+        <div class="sidebar-logo-sub">Panel Médico</div>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Principal</div>
+      <div class="nav-item active" onclick="showSection('agenda')" id="nav-agenda">
+        <span class="nav-icon">📅</span> Mi Agenda
+      </div>
+      <div class="nav-item" onclick="showSection('solicitudes')" id="nav-solicitudes">
+        <span class="nav-icon">📋</span> Solicitudes
+        <span class="nav-badge" id="nav-solicitudes-count"></span>
+      </div>
+      <div class="nav-section-label">Atención</div>
+      <div class="nav-item" onclick="showSection('historial')" id="nav-historial">
+        <span class="nav-icon">📂</span> Historial de Consultas
+      </div>
+      <div class="nav-section-label">Mi perfil</div>
+      <div class="nav-item" onclick="showSection('perfil')" id="nav-perfil">
+        <span class="nav-icon">👨‍⚕️</span> Mi Perfil
+      </div>
+      <div class="nav-item" onclick="showSection('horarios')" id="nav-horarios">
+        <span class="nav-icon">🕐</span> Mis Horarios
+      </div>
+      <div class="nav-section-label">Sistema</div>
+      <div class="nav-item" onclick="showSection('notificaciones')" id="nav-notificaciones">
+        <span class="nav-icon">🔔</span> Notificaciones
+        <span class="nav-badge" id="nav-notif-count-doc"></span>
+      </div>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="user-mini">
+        <div class="avatar" id="sidebar-avatar-doc">D</div>
+        <div>
+          <div class="user-mini-name" id="sidebar-name-doc">Doctor</div>
+          <div class="user-mini-role" id="sidebar-esp-doc">Especialidad</div>
+        </div>
+      </div>
+      <div class="nav-item" onclick="logout()" style="margin-top:4px;">
+        <span class="nav-icon">🚪</span> Cerrar sesión
+      </div>
+    </div>
+  </aside>
+
+  <!-- ── Main ── -->
+  <div class="main-content">
+    <div class="topbar">
+      <h1 class="topbar-title" id="topbar-title-doc">Mi Agenda</h1>
+      <div class="topbar-actions">
+        <div class="notif-btn" onclick="showSection('notificaciones')" title="Notificaciones">
+          🔔 <div class="notif-dot" id="notif-dot-doc" style="display:none;"></div>
+        </div>
+        <div class="avatar" id="topbar-avatar-doc">D</div>
+      </div>
+    </div>
+
+    <div class="page-content">
+
+      <!-- ── AGENDA ── -->
+      <div id="sec-agenda" class="animate-fade">
+        <div class="page-header">
+          <h2>Mi Agenda</h2>
+          <p>Citas programadas y disponibilidad</p>
+        </div>
+        <!-- Vista de citas próximas -->
+        <div class="kpi-grid" id="doc-kpis"></div>
+        <div class="tabs">
+          <button class="tab-btn active" onclick="switchAgendaTab('proximas',this)">Próximas citas</button>
+          <button class="tab-btn" onclick="switchAgendaTab('hoy',this)">Hoy</button>
+          <button class="tab-btn" onclick="switchAgendaTab('todas',this)">Todas</button>
+        </div>
+        <div id="agenda-content"></div>
+      </div>
+
+      <!-- ── SOLICITUDES ── -->
+      <div id="sec-solicitudes" style="display:none;" class="animate-fade">
+        <div class="page-header">
+          <h2>Solicitudes de Cita</h2>
+          <p>Gestiona las solicitudes de tus pacientes</p>
+        </div>
+        <div id="solicitudes-list"></div>
+      </div>
+
+      <!-- ── HISTORIAL ── -->
+      <div id="sec-historial" style="display:none;" class="animate-fade">
+        <div class="page-header">
+          <h2>Historial de Consultas</h2>
+          <p>Consultas realizadas y documentos emitidos</p>
+        </div>
+        <div id="historial-doc-list"></div>
+      </div>
+
+      <!-- ── PERFIL ── -->
+      <div id="sec-perfil" style="display:none;" class="animate-fade">
+        <div class="page-header">
+          <h2>Mi Perfil Profesional</h2>
+          <p>Edita tu información visible para los pacientes</p>
+        </div>
+        <div id="perfil-doc-content"></div>
+      </div>
+
+      <!-- ── HORARIOS ── -->
+      <div id="sec-horarios" style="display:none;" class="animate-fade">
+        <div class="page-header">
+          <h2>Mis Horarios Disponibles</h2>
+          <p>Configura los días y horas en que atiendes</p>
+        </div>
+        <div id="horarios-doc-content"></div>
+      </div>
+
+      <!-- ── NOTIFICACIONES ── -->
+      <div id="sec-notificaciones" style="display:none;" class="animate-fade">
+        <div class="page-header">
+          <h2>Notificaciones</h2>
+        </div>
+        <div class="notif-list" id="notif-list-doc"></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ── Modal: Ver cita y acciones del doctor ── -->
+<div class="modal-overlay" id="modal-cita-doc">
+  <div class="modal-box modal-lg">
+    <div class="modal-header">
+      <h3>Detalle de Cita</h3>
+      <button class="modal-close-btn" onclick="cerrarModal('modal-cita-doc')">×</button>
+    </div>
+    <div class="modal-body" id="modal-cita-doc-body"></div>
+    <div class="modal-footer" id="modal-cita-doc-footer"></div>
+  </div>
+</div>
+
+<!-- ── Modal: Rechazar / reprogramar cita ── -->
+<div class="modal-overlay" id="modal-rechazar">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3 id="modal-rechazar-title">Rechazar solicitud</h3>
+      <button class="modal-close-btn" onclick="cerrarModal('modal-rechazar')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Motivo *</label>
+        <textarea class="form-control" id="rechazar-motivo" placeholder="Explica el motivo al paciente..."></textarea>
+      </div>
+      <div id="reprogramar-fecha-group" style="display:none;">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Nueva fecha *</label>
+            <input type="date" class="form-control" id="reprogram-fecha">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Nueva hora *</label>
+            <input type="time" class="form-control" id="reprogram-hora">
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="cerrarModal('modal-rechazar')">Cancelar</button>
+      <button class="btn btn-danger" id="btn-confirm-rechazo" onclick="confirmarRechazo()">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Modal: Finalizar consulta (diagnóstico + documentos) ── -->
+<div class="modal-overlay" id="modal-finalizar">
+  <div class="modal-box modal-xl">
+    <div class="modal-header">
+      <h3>Finalizar Consulta</h3>
+      <button class="modal-close-btn" onclick="cerrarModal('modal-finalizar')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="tabs" style="margin-bottom:16px;">
+        <button class="tab-btn active" onclick="switchFinTab('diagnostico',this)">Diagnóstico</button>
+        <button class="tab-btn" onclick="switchFinTab('receta',this)">Receta</button>
+        <button class="tab-btn" onclick="switchFinTab('certificado',this)">Certificado</button>
+        <button class="tab-btn" onclick="switchFinTab('laboratorio',this)">Laboratorio</button>
+      </div>
+
+      <!-- Diagnóstico -->
+      <div id="fin-tab-diagnostico">
+        <div class="form-group">
+          <label class="form-label">Diagnóstico *</label>
+          <input type="text" class="form-control" id="fin-diagnostico" placeholder="Ej: Hipertensión leve, Síndrome gripal...">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Observaciones / Notas clínicas</label>
+          <textarea class="form-control" id="fin-notas" placeholder="Observaciones de la consulta..." style="min-height:120px;"></textarea>
+        </div>
+      </div>
+
+      <!-- Receta -->
+      <div id="fin-tab-receta" style="display:none;">
+        <div id="receta-medicamentos">
+          <div class="medicamento-row" style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr auto;gap:10px;align-items:end;margin-bottom:10px;">
+            <div class="form-group" style="margin:0;"><label class="form-label">Medicamento</label><input type="text" class="form-control med-nombre" placeholder="Paracetamol 500mg"></div>
+            <div class="form-group" style="margin:0;"><label class="form-label">Dosis</label><input type="text" class="form-control med-dosis" placeholder="1 tableta"></div>
+            <div class="form-group" style="margin:0;"><label class="form-label">Frecuencia</label><input type="text" class="form-control med-frecuencia" placeholder="Cada 8h"></div>
+            <div class="form-group" style="margin:0;"><label class="form-label">Duración</label><input type="text" class="form-control med-duracion" placeholder="5 días"></div>
+            <button class="btn btn-danger btn-sm" onclick="this.parentElement.remove()" style="margin-bottom:0;">✕</button>
+          </div>
+        </div>
+        <button class="btn btn-secondary btn-sm" onclick="agregarMedicamento()">+ Agregar medicamento</button>
+        <div class="form-group" style="margin-top:12px;">
+          <label class="form-label">Observaciones de la receta</label>
+          <textarea class="form-control" id="receta-obs" placeholder="Reposo, restricciones, etc..."></textarea>
+        </div>
+      </div>
+
+      <!-- Certificado -->
+      <div id="fin-tab-certificado" style="display:none;">
+        <div class="form-group">
+          <label class="form-label">Tipo de certificado</label>
+          <select class="form-control" id="cert-tipo">
+            <option>Reposo médico</option>
+            <option>Aptitud física</option>
+            <option>Consulta realizada</option>
+            <option>Incapacidad</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Días de reposo (si aplica)</label>
+          <input type="number" class="form-control" id="cert-dias" placeholder="3" min="0">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Contenido del certificado</label>
+          <textarea class="form-control" id="cert-contenido" placeholder="Se certifica que el paciente..."></textarea>
+        </div>
+      </div>
+
+      <!-- Laboratorio -->
+      <div id="fin-tab-laboratorio" style="display:none;">
+        <div class="form-group">
+          <label class="form-label">Exámenes solicitados (uno por línea)</label>
+          <textarea class="form-control" id="lab-examenes" placeholder="Hemograma completo&#10;Glucosa en ayunas&#10;Perfil lipídico..." style="min-height:120px;"></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Indicaciones adicionales</label>
+          <input type="text" class="form-control" id="lab-indicaciones" placeholder="En ayunas de 8 horas...">
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="cerrarModal('modal-finalizar')">Cancelar</button>
+      <button class="btn btn-success" onclick="finalizarConsulta()">✅ Finalizar consulta</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal historial paciente -->
+<div class="modal-overlay" id="modal-historial-paciente">
+  <div class="modal-box modal-lg">
+    <div class="modal-header">
+      <h3>Historial Clínico del Paciente</h3>
+      <button class="modal-close-btn" onclick="cerrarModal('modal-historial-paciente')">×</button>
+    </div>
+    <div class="modal-body" id="historial-pac-content"></div>
+  </div>
+</div>
+
+<script src="js/data.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/chatbot.js"></script>
+<script src="js/doctor.js"></script>
+</body>
+</html>
