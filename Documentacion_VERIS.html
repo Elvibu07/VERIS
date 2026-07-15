@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Documentación del Producto Final - VERIS (TeleMed)</title>
+<style>
+  :root {
+    --primary: #1E3A8A; /* Medical Blue */
+    --secondary: #3B82F6; /* Bright Blue */
+    --accent: #10B981; /* Success Green */
+    --bg: #F8FAFC;
+    --text: #0B1C30;
+    --text-light: #45474C;
+    --border: #E2E8F0;
+    --bg-alt: #F1F5F9;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.7;
+    color: var(--text);
+    background-color: #E2E8F0;
+    padding: 40px 20px;
+    font-size: 14px;
+  }
+
+  .page {
+    background: #fff;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 60px 80px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    border-radius: 4px;
+  }
+
+  /* PORTADA */
+  .cover {
+    min-height: 900px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    border-bottom: 3px solid var(--secondary);
+    margin-bottom: 40px;
+  }
+
+  .cover-logo {
+    font-size: 52px;
+    font-weight: 900;
+    color: var(--primary);
+    margin-bottom: 24px;
+    letter-spacing: -1.5px;
+  }
+
+  .cover h1 {
+    font-size: 40px;
+    line-height: 1.2;
+    margin-bottom: 16px;
+    color: var(--text);
+  }
+
+  .cover h2 {
+    font-size: 24px;
+    font-weight: 400;
+    color: var(--secondary);
+    margin-bottom: 48px;
+  }
+
+  .cover-meta {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 16px 40px;
+    text-align: left;
+    background: var(--bg-alt);
+    padding: 32px 40px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    max-width: 600px;
+  }
+
+  .cover-meta dt {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--secondary);
+  }
+
+  .cover-meta dd {
+    font-weight: 500;
+    color: var(--text);
+  }
+
+  /* TYPOGRAPHY */
+  h1.section-title {
+    font-size: 28px;
+    color: var(--primary);
+    margin-top: 56px;
+    margin-bottom: 24px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--secondary);
+    page-break-before: always;
+  }
+
+  h1.section-title:first-of-type {
+    page-break-before: auto;
+  }
+
+  h2 {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text);
+    margin-top: 36px;
+    margin-bottom: 16px;
+  }
+
+  h3 {
+    font-size: 18px;
+    color: var(--primary);
+    margin-top: 24px;
+    margin-bottom: 12px;
+    font-weight: 600;
+  }
+  
+  h4 {
+    font-size: 15px;
+    color: var(--text-light);
+    margin-top: 16px;
+    margin-bottom: 8px;
+    font-weight: 600;
+  }
+
+  p {
+    margin-bottom: 16px;
+    text-align: justify;
+  }
+
+  a {
+    color: var(--secondary);
+    text-decoration: none;
+  }
+
+  a:hover {
+    text-decoration: underline;
+  }
+
+  /* LISTS */
+  ul, ol {
+    margin: 12px 0 16px 32px;
+    text-align: justify;
+  }
+
+  li {
+    margin-bottom: 8px;
+  }
+
+  /* TABLES */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 24px 0;
+    font-size: 13px;
+  }
+
+  th, td {
+    padding: 12px;
+    border: 1px solid var(--border);
+    text-align: left;
+  }
+
+  th {
+    background-color: var(--primary);
+    color: #fff;
+    font-weight: 600;
+  }
+
+  tr:nth-child(even) {
+    background-color: var(--bg-alt);
+  }
+
+  /* DIAGRAM BOXES */
+  .diagram-box {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 24px;
+    margin: 24px 0;
+    overflow-x: auto;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 12px;
+    white-space: pre;
+    color: #1e293b;
+    line-height: 1.4;
+  }
+
+  .doc-footer {
+    margin-top: 60px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+    font-size: 12px;
+    color: var(--text-light);
+    text-align: center;
+  }
+
+  @media print {
+    body { background-color: white; padding: 0; }
+    .page { box-shadow: none; max-width: 100%; padding: 20px 40px; }
+    .diagram-box { font-size: 10px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+  <!-- PORTADA -->
+  <div class="cover">
+    <div class="cover-logo">VERIS</div>
+    <h1>Plataforma de Telemedicina y Gestión de Citas</h1>
+    <h2>Centro de Salud Digital "TeleMed"</h2>
+    <h2 style="font-size:16px; margin-bottom: 48px; color: #888;">Documentación Técnica del Producto Terminado</h2>
+    
+    <dl class="cover-meta">
+      <dt>Área de Aplicación</dt>
+      <dd>Salud, Telemedicina y Gestión Clínica</dd>
+      <dt>Organización</dt>
+      <dd>VERIS (Clínica Virtual)</dd>
+      <dt>Fecha de Despliegue</dt>
+      <dd>Julio 2026</dd>
+      <dt>Estado del Producto</dt>
+      <dd>En Producción (Versión Estable)</dd>
+      <dt>Repositorio</dt>
+      <dd><a href="https://github.com/Elvibu07/VERIS" target="_blank">github.com/Elvibu07/VERIS</a></dd>
+    </dl>
+  </div>
+
+  <h1 class="section-title">1. Introducción a la Plataforma Implementada</h1>
+  <p>La plataforma <strong>VERIS (TeleMed)</strong> es el producto tecnológico final implementado para la gestión de atenciones médicas virtuales y presenciales, operando como el sistema central de citas y videoconsultas de la institución.</p>
+  <p>El sistema digitaliza el proceso completo de atención al paciente: desde el agendamiento y pago simulado, hasta la ejecución de la consulta médica por videollamada y la emisión de recetas o certificados. La plataforma cuenta con una arquitectura de cliente robusto orientada a la experiencia de usuario (UX).</p>
+
+  <h1 class="section-title">2. Capacidades y Alcance del Producto</h1>
+  <p>El software entregado abarca íntegramente las necesidades operativas de la clínica, consolidando las siguientes capacidades:</p>
+  <ul>
+    <li><strong>Gestión de Citas (Agendamiento Inteligente):</strong> Sistema de reserva en 5 pasos que filtra disponibilidades cruzando especialidad, doctor, fecha y horario, con pasarela de pago simulada.</li>
+    <li><strong>Telemedicina (Videoconsultas):</strong> Sala virtual integrada que simula WebRTC con controles de cámara, micrófono, chat en vivo y temporizador, sin necesidad de apps externas.</li>
+    <li><strong>Portal del Paciente:</strong> Historial médico unificado con la capacidad de previsualizar y descargar recetas, certificados médicos y órdenes de laboratorio emitidos por el doctor.</li>
+    <li><strong>Gestión Médica Especializada:</strong> Panel para doctores que permite gestionar solicitudes de pacientes (aceptar/reprogramar) y configurar su propia agenda.</li>
+    <li><strong>Inteligencia de Negocios y Administración:</strong> Tableros de control gerencial con KPIs de ingresos, flujo de pacientes y gestión de especialidades/doctores.</li>
+  </ul>
+
+  <h1 class="section-title">3. Perfiles Operativos del Sistema</h1>
+  <p>La seguridad y navegación está estructurada bajo un control de acceso por roles (RBAC). El sistema reconoce y restringe las funcionalidades según el nivel de autorización.</p>
+
+  <h2>3.1. Administrador</h2>
+  <p>Es el usuario de mayor jerarquía. Controla los recursos globales de la clínica.</p>
+  <ul>
+    <li>Supervisa las métricas globales (Ingresos, Citas Totales).</li>
+    <li>Gestiona el catálogo de Especialidades Médicas.</li>
+    <li>Administra la plantilla de Doctores (altas, bajas, edición de tarifas) y puede habilitar o bloquear pacientes.</li>
+  </ul>
+
+  <h2>3.2. Doctor</h2>
+  <p>El profesional de la salud responsable de brindar la atención médica.</p>
+  <ul>
+    <li>Consulta en su agenda las citas pendientes, confirmadas y del día.</li>
+    <li>Atiende la cita a través del módulo de videoconsulta.</li>
+    <li>Durante o después de la atención, redacta diagnósticos y emite documentos oficiales (Recetas, Certificados) que quedan anexados al paciente.</li>
+  </ul>
+
+  <h2>3.3. Paciente</h2>
+  <p>El usuario final que consume los servicios de la clínica.</p>
+  <ul>
+    <li>Busca especialidades y agenda citas médicas, evaluando las tarifas.</li>
+    <li>Ingresa a la sala de espera / videoconsulta a la hora acordada.</li>
+    <li>Tiene un repositorio seguro con todo su historial y documentos médicos listos para descargar.</li>
+  </ul>
+
+  <h1 class="section-title">4. Manual de Flujos Operativos Entregados</h1>
+
+  <h2>4.1. Flujo de Agendamiento de Citas</h2>
+  <ol>
+    <li>El Paciente inicia sesión y accede al Wizard de "Agendar Cita".</li>
+    <li>Selecciona la especialidad deseada (Ej. Cardiología).</li>
+    <li>El sistema lista a los doctores disponibles de esa especialidad. Se selecciona uno.</li>
+    <li>Se elige una fecha en el calendario y una hora disponible del doctor.</li>
+    <li>Se detalla el motivo de la consulta, se confirma el pago simulado y la cita queda en estado "Pendiente".</li>
+    <li>El Doctor revisa la solicitud en su panel y la "Acepta", pasando a estado "Confirmada".</li>
+  </ol>
+
+  <h2>4.2. Flujo de Videoconsulta y Diagnóstico</h2>
+  <ol>
+    <li>A la hora pactada, tanto Doctor como Paciente presionan "Unirse" a la videoconsulta.</li>
+    <li>El sistema habilita la sala virtual. El panel derecho muestra información clínica (para el doctor) o general.</li>
+    <li>Al concluir, el Doctor finaliza la llamada, marcando la cita como "Completada".</li>
+    <li>El Doctor accede al historial del paciente y redacta una receta con las indicaciones correspondientes.</li>
+    <li>El Paciente puede ver inmediatamente la receta en su panel y descargar el PDF.</li>
+  </ol>
+
+  <h1 class="section-title">5. Arquitectura Técnica del Sistema Desplegado</h1>
+  <p>El producto final posee una arquitectura "Serverless / Cliente Robusto", utilizando tecnologías web estándar modernas sin requerir un backend físico, persistiendo los datos de manera eficiente en el navegador.</p>
+
+  <h2>5.1. Stack Tecnológico</h2>
+  <ul>
+    <li><strong>Frontend & Interfaz:</strong> HTML5 Semántico y CSS3 Vanilla con variables y Dark Mode nativo. Layouts basados en CSS Grid y Flexbox.</li>
+    <li><strong>Lógica y Controladores:</strong> JavaScript ES6+ (Modularizado en auth.js, data.js, admin.js, doctor.js, paciente.js).</li>
+    <li><strong>Almacenamiento de Datos:</strong> API de LocalStorage actuando como base de datos documental (NoSQL simulada), persistiendo estados de usuarios y relaciones entre citas.</li>
+    <li><strong>Componentes Virtuales:</strong> Chatbot MediBot integrado en JS puro y sala de videoconferencia simulada con manejo de media y temporizadores asíncronos.</li>
+  </ul>
+
+  <h1 class="section-title">6. Diagramas UML de la Arquitectura Implementada</h1>
+
+  <h2>6.1. Diagrama de Casos de Uso del Producto</h2>
+  <div class="diagram-box">
+                      PLATAFORMA CLÍNICA VERIS
+                     ┌───────────────────────────────────────────────┐
+                     │                                               │
+  ┌────────────┐     │    (Módulo: Panel de Control KPI) <───────┐   │     ┌─────────────┐
+  │            │────▶│                                           │   │     │             │
+  │ Administ.  │     │    (Gestión Doctores/Especialidades) <────┤   │◀────│   Doctor    │
+  │            │────▶│                                           │   │     │             │
+  └────────────┘     │    (Gestión de Citas y Agendas) <─────────┤   │     └─────────────┘
+                     │                                           │   │            │
+  ┌────────────┐     │    (Asistente Agendamiento 5 Pasos)<──────┼───│────────────┘
+  │            │────▶│                                           │   │
+  │  Paciente  │     │    (Módulo: Videoconsulta Virtual) <──────┤   │
+  │            │────▶│                                           │   │
+  └────────────┘     │    (Emisión de Documentos Médicos) <──────┘   │
+                     │                                               │
+                     └───────────────────────────────────────────────┘
+  </div>
+
+  <h2>6.2. Diagrama de Clases (Estructura LocalStorage)</h2>
+  <div class="diagram-box">
+  ┌──────────────────────────────┐
+  │         veris_users          │
+  ├──────────────────────────────┤
+  │ + id: String (PK)            │
+  │ + rol: String ('paciente'..) │
+  │ + email: String              │
+  │ + password: String           │
+  └──────────────┬───────────────┘
+                 │ 1
+                 │
+                 │ N
+  ┌──────────────────────────────┐          ┌──────────────────────────────┐
+  │      veris_appointments      │          │        veris_doctors         │
+  ├──────────────────────────────┤          ├──────────────────────────────┤
+  │ + id: String (PK)            │          │ + id: String (PK)            │
+  │ + pacienteId: String (FK)    │◀────────♦│ + especialidad: String       │
+  │ + doctorId: String (FK)      │   1..N   │ + tarifa: Number             │
+  │ + fechaHora: Datetime        │          │ + horarios: Array            │
+  │ + estado: String             │          │ + disponibilidad()           │
+  │ + receta: Object             │          └──────────────────────────────┘
+  └──────────────────────────────┘          
+                 ▲                          
+                 │ N (Pertenecen)           
+        ┌────────┴────────┐                 
+        │                 │                 
+ ┌──────────────┐  ┌──────────────┐         
+ │veris_history │  │veris_notifs  │         
+ │  (Docs)      │  │  (Alertas)   │         
+ └──────────────┘  └──────────────┘         
+  </div>
+
+  <h2>6.3. Diagrama de Secuencia de Agendamiento</h2>
+  <div class="diagram-box">
+PACIENTE                VISTA WIZARD                 DATA MANAGER                  DOCTOR
+   │                           │                            │                        │
+   │──(1) Agendar Cita ───────▶│                            │                        │
+   │                           │──(2) Solicita Disp.───────▶│                        │
+   │                           │◀──(3) Retorna Doctores─────│                        │
+   │                           │                            │                        │
+   │──(4) Elige Fecha/Hora ───▶│                            │                        │
+   │                           │──(5) SaveAppointment() ───▶│                        │
+   │                           │                            │──(6) Nueva Alerta ────▶│
+   │◀──(7) Pago y Confirmac.───│                            │                        │
+   │                           │                            │                        │
+   │                           │                            │◀─(8) Acepta Cita ──────│
+   │                           │◀──(9) Update(Confirmada)───│                        │
+   │                           │                            │                        │
+   │◀─(10) Cita Lista en Panel 
+  </div>
+
+  <h1 class="section-title">7. Módulos Funcionales Entregados</h1>
+  <p>La plataforma cumple con los requerimientos esenciales para una clínica virtual:</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Módulo Operativo</th>
+        <th>Descripción de Funcionalidad Implementada</th>
+        <th>Estado</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Autenticación Universal</td>
+        <td>Login unificado que redirecciona a los tres paneles diferentes según el rol detectado en la base de datos (Admin, Doctor, Paciente).</td>
+        <td><strong>Producción</strong></td>
+      </tr>
+      <tr>
+        <td>Panel Administrador</td>
+        <td>Visión 360 de la clínica: gestión dinámica de especialidades, control de doctores y métricas financieras básicas.</td>
+        <td><strong>Producción</strong></td>
+      </tr>
+      <tr>
+        <td>Asistente de Citas</td>
+        <td>Proceso de agendamiento "step-by-step" (paso a paso) con validación de formularios y guardado seguro del estado de la cita.</td>
+        <td><strong>Producción</strong></td>
+      </tr>
+      <tr>
+        <td>Videoconsulta (Sala)</td>
+        <td>Pantalla especializada con simulación de cámaras, chat en tiempo real y contador de duración para la atención médica.</td>
+        <td><strong>Producción</strong></td>
+      </tr>
+      <tr>
+        <td>Historial y Documentos</td>
+        <td>Generación de recetas y certificados asignados a las citas, con capacidad de previsualización estilo PDF para el paciente.</td>
+        <td><strong>Producción</strong></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- ============ FOOTER ============ -->
+  <div class="doc-footer">
+    <p><strong>Repositorio Seguro de Código:</strong> <a href="https://github.com/Elvibu07/VERIS" target="_blank">https://github.com/Elvibu07/VERIS</a></p>
+    <p style="margin-top: 16px; color: #999;">Documentación del Producto Finalizado · Proyecto VERIS TeleMedicina · Julio 2026</p>
+  </div>
+
+</div>
+</body>
+</html>
