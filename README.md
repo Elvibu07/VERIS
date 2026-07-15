@@ -4,7 +4,14 @@ Sistema web completo para gestión de citas médicas y teleconsultas, desarrolla
 
 ---
 
-## 🚀 Cómo abrir el proyecto
+## 🌐 Demo en vivo (Producción)
+
+Puedes probar el proyecto desplegado en Vercel aquí:
+👉 **[https://veris-five.vercel.app](https://veris-five.vercel.app)**
+
+---
+
+## 🚀 Cómo abrir el proyecto localmente
 
 1. **Navega** a la carpeta `Proyecto veris`
 2. **Abre** el archivo `index.html` en tu navegador (Chrome, Firefox o Edge actualizados)
